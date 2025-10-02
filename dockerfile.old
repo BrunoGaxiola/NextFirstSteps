@@ -1,0 +1,27 @@
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy only package files first (to leverage Docker cache)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install --legacy-peer-deps
+
+# Copy project files
+COPY . .
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV NEXT_USE_TURBOPACK=0
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
+# Build the app
+RUN npm run build
+
+# Expose port
+EXPOSE 3000
+
+# Run the app
+CMD ["npm", "start"]
